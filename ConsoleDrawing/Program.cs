@@ -20,7 +20,6 @@ namespace ConsoleDrawing
                 }
             }
         }
-
         static void DrawScreen()
         {
             for (int y = 0; y < 25; y++)
@@ -39,7 +38,6 @@ namespace ConsoleDrawing
             Console.SetCursorPosition(cursorX, cursorY);
             Console.CursorVisible = true;
         }
-
         static void DisplaySettings()
         {
             Console.SetCursorPosition(0, 25);
@@ -48,7 +46,6 @@ namespace ConsoleDrawing
             Console.WriteLine("Character: " + currentChar);
             Console.WriteLine("Cursor Color: " + cursorColor.ToString());
         }
-
         static void Backspace()
         {
             if (cursorX > 0)
@@ -59,7 +56,6 @@ namespace ConsoleDrawing
                 DrawScreen();
             }
         }
-
         static void MoveCursor(int dx, int dy)
         {
             int newX = cursorX + dx, newY = cursorY + dy;
@@ -69,7 +65,6 @@ namespace ConsoleDrawing
                 cursorY = newY;
             }
         }
-
         static void DrawChar(string c, ConsoleColor color)
         {
             for (int i = 0; i < c.Length; i++)
@@ -78,13 +73,11 @@ namespace ConsoleDrawing
                 screenColors[cursorY, cursorX + i] = color;
             }
         }
-
         static void SetColor(ConsoleColor color)
         {
             currentColor = color;
             Console.ForegroundColor = color;
         }
-
         static void DisplayMenu()
         {
             Console.Clear();
@@ -93,7 +86,6 @@ namespace ConsoleDrawing
             Console.WriteLine("2. New Drawing");
             Console.Write("Choose an option: ");
         }
-
         static void LoadExistingDrawing()
         {
             string filePath = "existing_drawing.txt";
@@ -110,7 +102,6 @@ namespace ConsoleDrawing
                 DrawScreen();
             }
         }
-
         static void CreateNewDrawing()
         {
             for (int y = 0; y < 25; y++)
@@ -122,7 +113,6 @@ namespace ConsoleDrawing
             }
             DrawScreen();
         }
-
         static void SaveDrawing()
         {
             string filePath = "existing_drawing.txt";
@@ -138,7 +128,6 @@ namespace ConsoleDrawing
             }
             File.WriteAllLines(filePath, lines);
         }
-
         static void Main(string[] args)
         {
             while (true)
