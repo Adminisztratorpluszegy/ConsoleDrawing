@@ -1,3 +1,8 @@
+namespace ConsoleDrawing;
+using System;
+using System.IO;
+using System.Linq.Expressions;
+
 class Program
 {
     static char[,] screen = new char[25, 80];
@@ -97,7 +102,7 @@ class Program
         bool optionSelected = false;
 
         int menuWidth = 20;
-        int menuHeight = 6;
+        int menuHeight = 6; 
         int menuX = (Console.WindowWidth - menuWidth) / 2;
         int menuY = (Console.WindowHeight - menuHeight) / 2;
 
@@ -120,7 +125,7 @@ class Program
         do
         {
             Console.SetCursorPosition(menuX, menuY);
-            Console.WriteLine(selectedOption == 1 ? "> Új rajz" : "  Új rajz");
+            Console.WriteLine(selectedOption == 1 ? "> Rajz szerkesztése" : "  Rajz szerkesztése");
             Console.SetCursorPosition(menuX, menuY + 1);
             Console.WriteLine(selectedOption == 2 ? "> Mentés" : "  Mentés");
             Console.SetCursorPosition(menuX, menuY + 2);
@@ -129,6 +134,7 @@ class Program
             Console.WriteLine(selectedOption == 4 ? "> Fájl törlése" : "  Fájl törlése");
             Console.SetCursorPosition(menuX, menuY + 4);
             Console.WriteLine(selectedOption == 5 ? "> Kilépés" : "  Kilépés");
+            Console.SetCursorPosition(menuX, menuY + 5);
             keyInfo = Console.ReadKey(true);
             key = keyInfo.Key;
 
@@ -141,7 +147,7 @@ class Program
                     }
                     break;
                 case ConsoleKey.DownArrow:
-                    if (selectedOption < 5)
+                    if (selectedOption < 5) 
                     {
                         selectedOption++;
                     }
@@ -164,7 +170,7 @@ class Program
                 LoadExistingDrawing();
                 break;
             case 4:
-                DeleteDrawing();
+                DeleteDrawing(); 
                 break;
             case 5:
                 Environment.Exit(0);
@@ -198,7 +204,7 @@ class Program
             if (int.TryParse(index, out int selectedDrawingIndex) && selectedDrawingIndex >= 1 && selectedDrawingIndex <= drawingFiles.Length)
             {
                 string selectedDrawingFile = drawingFiles[selectedDrawingIndex - 1];
-                File.Delete(selectedDrawingFile);
+                File.Delete(selectedDrawingFile); 
                 Console.WriteLine($"A fájl sikeresen törölve: {selectedDrawingFile}");
             }
             else
@@ -248,7 +254,7 @@ class Program
                 }
 
                 DrawScreen();
-                EditDrawing();
+                EditDrawing(); 
             }
             else
             {
@@ -342,15 +348,11 @@ class Program
             }
         }
     }
+
     static void SaveDrawing()
     {
-        Console.Write("Enter the file name to save the drawing: ");
-        string? fileName = Console.ReadLine();
-        if (string.IsNullOrEmpty(fileName))
-        {
-            Console.WriteLine("Invalid file name.");
-            return;
-        }
+        Console.Write("Írj egy file nevet a mentéshez: ");
+        string fileName = Console.ReadLine();
         string filePath = fileName + ".txt";
         string[] lines = new string[25];
         for (int y = 0; y < 25; y++)
@@ -363,8 +365,9 @@ class Program
             lines[y] = line;
         }
         File.WriteAllLines(filePath, lines);
-        Console.WriteLine("Drawing saved successfully!");
+        Console.WriteLine("A rajz sikeresen elmentve!!");
     }
+
     static void Main(string[] args)
     {
         InitScreen();
