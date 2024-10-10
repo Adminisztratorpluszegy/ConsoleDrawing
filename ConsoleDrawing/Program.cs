@@ -105,27 +105,10 @@ class Program
         int menuHeight = 6; 
         int menuX = (Console.WindowWidth - menuWidth) / 2;
         int menuY = (Console.WindowHeight - menuHeight) / 2;
-
-        for (int y = menuY - 1; y <= menuY + menuHeight; y++)
-        {
-            Console.SetCursorPosition(menuX - 1, y);
-            Console.Write("|");
-            Console.SetCursorPosition(menuX + menuWidth, y);
-            Console.Write("|");
-        }
-        Console.SetCursorPosition(menuX - 1, menuY - 1);
-        Console.Write("+");
-        Console.SetCursorPosition(menuX + menuWidth, menuY - 1);
-        Console.Write("+");
-        Console.SetCursorPosition(menuX - 1, menuY + menuHeight);
-        Console.Write("+");
-        Console.SetCursorPosition(menuX + menuWidth, menuY + menuHeight);
-        Console.Write("+");
-
         do
         {
             Console.SetCursorPosition(menuX, menuY);
-            Console.WriteLine(selectedOption == 1 ? "> Rajz szerkesztése" : "  Rajz szerkesztése");
+            Console.WriteLine(selectedOption == 1 ? "> Rajz létrehozása" : "  Rajz létrehozása");
             Console.SetCursorPosition(menuX, menuY + 1);
             Console.WriteLine(selectedOption == 2 ? "> Mentés" : "  Mentés");
             Console.SetCursorPosition(menuX, menuY + 2);
@@ -187,7 +170,7 @@ class Program
             Console.WriteLine("Nem található ilyen.");
             return;
         }
-        Console.WriteLine("Válassz egy fáljt a törléshez: ");
+        Console.WriteLine("Írja be a fájl számát a törléshez: ");
 
         for (int i = 0; i < drawingFiles.Length; i++)
         {
@@ -223,7 +206,7 @@ class Program
             Console.WriteLine("Nem található ilyen.");
             return;
         }
-        Console.WriteLine("Válassz egy fáljt: ");
+        Console.WriteLine("Írja be a fájl számát betöltéshez: ");
 
         for (int i = 0; i < drawingFiles.Length; i++)
         {
