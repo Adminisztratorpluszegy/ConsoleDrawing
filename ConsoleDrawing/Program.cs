@@ -1,8 +1,3 @@
-namespace ConsoleDrawing;
-using System;
-using System.IO;
-using System.Linq.Expressions;
-
 class Program
 {
     static char[,] screen = new char[25, 80];
@@ -11,6 +6,264 @@ class Program
     static ConsoleColor currentColor = ConsoleColor.White;
     static string currentChar = "█";
     static ConsoleColor cursorColor = ConsoleColor.White;
+
+    static void Main(string[] args)
+    {
+        while (true)
+        {
+            DisplayMenu();
+        }
+    }
+
+    static void DisplayMenu()
+    {
+        Console.Clear();
+        ConsoleKeyInfo keyInfo;
+        ConsoleKey key;
+        int selectedOption = 1;
+        bool optionSelected = false;
+        int menuWidth = 17;
+        int menuHeight = 4;
+        int menuX = (Console.WindowWidth - menuWidth) / 2;
+        int menuY = (Console.WindowHeight - menuHeight) / 2;
+
+        for (int y = menuY - 1; y <= menuY + menuHeight; y++)
+        {
+            Console.SetCursorPosition(menuX - 1, y);
+            Console.Write("│");
+            Console.SetCursorPosition(menuX + menuWidth, y);
+            Console.Write("│");
+        }
+        Console.SetCursorPosition(menuX - 1, menuY - 1);
+        Console.Write("┌");
+        Console.SetCursorPosition(menuX + menuWidth, menuY - 1);
+        Console.Write("┐");
+        Console.SetCursorPosition(menuX - 1, menuY + menuHeight);
+        Console.Write("└");
+        Console.SetCursorPosition(menuX + menuWidth, menuY + menuHeight);
+        Console.Write("┘");
+
+        do
+        {
+            Console.SetCursorPosition(menuX, menuY);
+            Console.WriteLine(selectedOption == 1 ? "> Új rajz" : "  Új rajz");
+            Console.SetCursorPosition(menuX, menuY + 1);
+            Console.WriteLine(selectedOption == 2 ? "> Rajz betöltése" : "  Rajz betöltése");
+            Console.SetCursorPosition(menuX, menuY + 2);
+            Console.WriteLine(selectedOption == 3 ? "> Fájl törlése" : "  Fájl törlése");
+            Console.SetCursorPosition(menuX, menuY + 3);
+            Console.WriteLine(selectedOption == 4 ? "> Kilépés" : "  Kilépés");
+            keyInfo = Console.ReadKey(true);
+            key = keyInfo.Key;
+            switch (key)
+            {
+                case ConsoleKey.UpArrow:
+                    if (selectedOption > 1)
+                    {
+                        selectedOption--;
+                    }
+                    break;
+                case ConsoleKey.DownArrow:
+                    if (selectedOption < 4)
+                    {
+                        selectedOption++;
+                    }
+                    break;
+                case ConsoleKey.Enter:
+                    optionSelected = true;
+                    break;
+            }
+        } while (!optionSelected);
+
+        switch (selectedOption)
+        {
+            case 1:
+                CreateNewDrawing();
+                break;
+            case 2:
+                LoadExistingDrawing();
+                break;
+            case 3:
+                DeleteDrawing();
+                break;
+            case 4:
+                Environment.Exit(0);
+                break;
+        }
+    }
+
+    static void CreateNewDrawing()
+    {
+        InitScreen();
+        DrawScreen();
+        EditDrawing();
+    }
+
+    static void LoadExistingDrawing()
+    {
+        string[] drawingFiles = Directory.GetFiles(".", "*.txt");
+
+        if (drawingFiles.Length == 0)
+        {
+            Console.WriteLine("Nem található ilyen.");
+            return;
+        }
+        int selectedOption = 0;
+        bool optionSelected = false;
+        bool exitMenu = false;
+        Console.Clear();
+        do
+        {
+            Console.SetCursorPosition(10, 10);
+            Console.WriteLine("Válassz egy fájlt: ");
+            int menuWidth = 17;
+            int menuHeight = drawingFiles.Length + 2;
+            int menuX = (Console.WindowWidth - menuWidth) / 2;
+            int menuY = (Console.WindowHeight - menuHeight) / 2;
+            for (int y = menuY - 1; y <= menuY + menuHeight; y++)
+            {
+                Console.SetCursorPosition(menuX - 1, y);
+                Console.Write("│");
+                Console.SetCursorPosition(menuX + menuWidth, y);
+                Console.Write("│");
+            }
+            Console.SetCursorPosition(menuX - 1, menuY - 1);
+            Console.Write("┌");
+            Console.SetCursorPosition(menuX + menuWidth, menuY - 1);
+            Console.Write("┐");
+            Console.SetCursorPosition(menuX - 1, menuY + menuHeight);
+            Console.Write("└");
+            Console.SetCursorPosition(menuX + menuWidth, menuY + menuHeight);
+            Console.Write("┘");
+            for (int i = 0; i < drawingFiles.Length; i++)
+            {
+                Console.SetCursorPosition(menuX, menuY + i + 1);
+                Console.WriteLine(selectedOption == i ? $"> {i + 1}. {Path.GetFileNameWithoutExtension(drawingFiles[i])}" : $"  {i + 1}. {Path.GetFileNameWithoutExtension(drawingFiles[i])}");
+            }
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+            ConsoleKey key = keyInfo.Key;
+            switch (key)
+            {
+                case ConsoleKey.UpArrow:
+                    if (selectedOption > 0)
+                    {
+                        selectedOption--;
+                    }
+                    break;
+                case ConsoleKey.DownArrow:
+                    if (selectedOption < drawingFiles.Length - 1)
+                    {
+                        selectedOption++;
+                    }
+                    break;
+                case ConsoleKey.Enter:
+                    optionSelected = true;
+                    break;
+                case ConsoleKey.Escape:
+                    exitMenu = true;
+                    optionSelected = true;
+                    break;
+            }
+        } while (!optionSelected && !exitMenu);
+        if (exitMenu)
+        {
+            return;
+        }
+        string selectedDrawingFile = drawingFiles[selectedOption];
+        string[] lines = File.ReadAllLines(selectedDrawingFile);
+        InitScreen();
+        for (int y = 0; y < Math.Min(lines.Length, 25); y++)
+        {
+            for (int x = 0; x < Math.Min(lines[y].Length, 80); x++)
+            {
+                screen[y, x] = lines[y][x];
+                screenColors[y, x] = ConsoleColor.White;
+            }
+        }
+        Console.SetCursorPosition(10, 10);
+        Console.CursorVisible = false;
+        Console.Clear();
+        DrawScreen();
+        EditDrawing();
+    }
+
+    static void DeleteDrawing()
+    {
+        string[] drawingFiles = Directory.GetFiles(".", "*.txt");
+
+        if (drawingFiles.Length == 0)
+        {
+            Console.WriteLine("Nem található ilyen.");
+            return;
+        }
+        int selectedOption = 0;
+        bool optionSelected = false;
+        bool exitMenu = false;
+        Console.Clear();
+        do
+        {
+            Console.SetCursorPosition(10, 10);
+            Console.WriteLine("Válassz egy fájlt: ");
+            int menuWidth = 17;
+            int menuHeight = drawingFiles.Length + 2;
+            int menuX = (Console.WindowWidth - menuWidth) / 2;
+            int menuY = (Console.WindowHeight - menuHeight) / 2;
+            for (int y = menuY - 1; y <= menuY + menuHeight; y++)
+            {
+                Console.SetCursorPosition(menuX - 1, y);
+                Console.Write("│");
+                Console.SetCursorPosition(menuX + menuWidth, y);
+                Console.Write("│");
+            }
+            Console.SetCursorPosition(menuX - 1, menuY - 1);
+            Console.Write("┌");
+            Console.SetCursorPosition(menuX + menuWidth, menuY - 1);
+            Console.Write("┐");
+            Console.SetCursorPosition(menuX - 1, menuY + menuHeight);
+            Console.Write("└");
+            Console.SetCursorPosition(menuX + menuWidth, menuY + menuHeight);
+            Console.Write("┘");
+            for (int i = 0; i < drawingFiles.Length; i++)
+            {
+                Console.SetCursorPosition(menuX, menuY + i + 1);
+                Console.WriteLine(selectedOption == i ? $"> {i + 1}. {Path.GetFileNameWithoutExtension(drawingFiles[i])}" : $"  {i + 1}. {Path.GetFileNameWithoutExtension(drawingFiles[i])}");
+            }
+            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+            ConsoleKey key = keyInfo.Key;
+            switch (key)
+            {
+                case ConsoleKey.UpArrow:
+                    if (selectedOption > 0)
+                    {
+                        selectedOption--;
+                    }
+                    break;
+                case ConsoleKey.DownArrow:
+                    if (selectedOption < drawingFiles.Length - 1)
+                    {
+                        selectedOption++;
+                    }
+                    break;
+                case ConsoleKey.Enter:
+                    optionSelected = true;
+                    break;
+                case ConsoleKey.Escape:
+                    exitMenu = true;
+                    optionSelected = true;
+                    break;
+            }
+        } while (!optionSelected && !exitMenu);
+
+        if (exitMenu)
+        {
+            return;
+        }
+        string selectedDrawingFile = drawingFiles[selectedOption];
+        File.Delete(selectedDrawingFile);
+        Console.WriteLine($"A fájl sikeresen törölve: {selectedDrawingFile}");
+        Console.WriteLine("Nyomjon meg egy gombot a menübe lépéshez");
+        Console.ReadKey(true);
+    }
 
     static void InitScreen()
     {
@@ -44,13 +297,89 @@ class Program
         Console.CursorVisible = false;
     }
 
+    static void EditDrawing()
+    {
+        while (true)
+        {
+            DrawScreen();
+            DisplaySettings();
+            ConsoleKeyInfo originalKeyInfo = Console.ReadKey(true);
+            ConsoleKey originalKey = originalKeyInfo.Key;
+            switch (originalKey)
+            {
+                case ConsoleKey.Backspace:
+                    Backspace();
+                    break;
+                case ConsoleKey.UpArrow:
+                    MoveCursor(0, -1);
+                    break;
+                case ConsoleKey.DownArrow:
+                    MoveCursor(0, 1);
+                    break;
+                case ConsoleKey.LeftArrow:
+                    MoveCursor(-1, 0);
+                    break;
+                case ConsoleKey.RightArrow:
+                    MoveCursor(1, 0);
+                    break;
+                case ConsoleKey.Spacebar:
+                    DrawChar(currentChar, currentColor);
+                    break;
+                case ConsoleKey.D0:
+                    break;
+                case ConsoleKey.D1:
+                    SetColor(ConsoleColor.Red);
+                    break;
+                case ConsoleKey.D2:
+                    SetColor(ConsoleColor.Green);
+                    break;
+                case ConsoleKey.D3:
+                    SetColor(ConsoleColor.Yellow);
+                    break;
+                case ConsoleKey.D4:
+                    SetColor(ConsoleColor.Blue);
+                    break;
+                case ConsoleKey.D5:
+                    SetColor(ConsoleColor.Magenta);
+                    break;
+                case ConsoleKey.D6:
+                    SetColor(ConsoleColor.Cyan);
+                    break;
+                case ConsoleKey.D7:
+                    SetColor(ConsoleColor.DarkGreen);
+                    break;
+                case ConsoleKey.D8:
+                    SetColor(ConsoleColor.DarkYellow);
+                    break;
+                case ConsoleKey.D9:
+                    SetColor(ConsoleColor.DarkRed);
+                    break;
+                case ConsoleKey.NumPad1:
+                    currentChar = "█";
+                    break;
+                case ConsoleKey.NumPad2:
+                    currentChar = "▓";
+                    break;
+                case ConsoleKey.NumPad3:
+                    currentChar = "▒";
+                    break;
+                case ConsoleKey.NumPad4:
+                    currentChar = "░";
+                    break;
+                case ConsoleKey.Escape:
+                    SaveDrawing();
+                    return;
+            }
+        }
+    }
+
     static void DisplaySettings()
     {
         Console.SetCursorPosition(0, 25);
-        Console.WriteLine("Color: " + currentColor);
-        Console.WriteLine("Cursor: " + cursorX + ", " + cursorY);
-        Console.WriteLine("Character: " + currentChar);
-        Console.WriteLine("Cursor Color: " + cursorColor);
+        Console.WriteLine($"Color: {currentColor}");
+        Console.WriteLine($"Cursor: {cursorX}, {cursorY}");
+        Console.WriteLine($"Character: {currentChar}");
+        Console.WriteLine($"Cursor Color: {cursorColor}");
     }
 
     static void Backspace()
@@ -93,361 +422,10 @@ class Program
         Console.ForegroundColor = color;
     }
 
-    static void DisplayMenu()
-    {
-        Console.Clear();
-        ConsoleKeyInfo keyInfo;
-        ConsoleKey key;
-        int selectedOption = 1;
-        bool optionSelected = false;
-
-        int menuWidth = 30;
-        int menuHeight = 5;
-        int menuX = (Console.WindowWidth - menuWidth) / 2;
-        int menuY = (Console.WindowHeight - menuHeight) / 2;
-
-        for (int y = menuY - 1; y <= menuY + menuHeight; y++)
-        {
-            Console.SetCursorPosition(menuX - 1, y);
-            Console.Write("|");
-            Console.SetCursorPosition(menuX + menuWidth, y);
-            Console.Write("|");
-        }
-        Console.SetCursorPosition(menuX - 1, menuY - 1);
-        Console.Write("+");
-        Console.SetCursorPosition(menuX + menuWidth, menuY - 1);
-        Console.Write("+");
-        Console.SetCursorPosition(menuX - 1, menuY + menuHeight);
-        Console.Write("+");
-        Console.SetCursorPosition(menuX + menuWidth, menuY + menuHeight);
-        Console.Write("+");
-
-        do
-        {
-            Console.SetCursorPosition(menuX, menuY);
-            Console.WriteLine(selectedOption == 1 ? "> Rajz szerkesztése" : "  Rajz szerkesztése");
-            Console.SetCursorPosition(menuX, menuY + 1);
-            Console.WriteLine(selectedOption == 2 ? "> Betöltés" : "  Betöltés");
-            Console.SetCursorPosition(menuX, menuY + 2);
-            Console.WriteLine(selectedOption == 3 ? "> Fájl törlése" : "  Fájl törlése");
-            Console.SetCursorPosition(menuX, menuY + 3);
-            Console.WriteLine(selectedOption == 4 ? "> Kilépés" : "  Kilépés");
-            Console.SetCursorPosition(menuX, menuY + 4);
-            keyInfo = Console.ReadKey(true);
-            key = keyInfo.Key;
-
-            switch (key)
-            {
-                case ConsoleKey.UpArrow:
-                    if (selectedOption > 1)
-                    {
-                        selectedOption--;
-                    }
-                    break;
-                case ConsoleKey.DownArrow:
-                    if (selectedOption < 4)
-                    {
-                        selectedOption++;
-                    }
-                    break;
-                case ConsoleKey.Enter:
-                    optionSelected = true;
-                    break;
-            }
-        } while (!optionSelected);
-
-        switch (selectedOption)
-        {
-            case 1:
-                CreateNewDrawing();
-                break;
-            case 2:
-                LoadExistingDrawing();
-                break;
-            case 3:
-                DeleteDrawing();
-                break;
-            case 4:
-                Environment.Exit(0);
-                break;
-        }
-    }
-
-    static void DeleteDrawing()
-    {
-        string[] drawingFiles = Directory.GetFiles(".", "*.txt");
-
-        if (drawingFiles.Length == 0)
-        {
-            Console.WriteLine("Nem található ilyen.");
-            return;
-        }
-
-        int selectedOption = 0;
-        bool optionSelected = false;
-        bool exitMenu = false;
-
-        Console.Clear();
-
-        do
-        {
-            Console.SetCursorPosition(10, 10);
-            Console.WriteLine("                                          Válassz egy fájlt    ");
-            int menuWidth = 30;
-            int menuHeight = drawingFiles.Length + 2;
-            int menuX = (Console.WindowWidth - menuWidth) / 2;
-            int menuY = (Console.WindowHeight - menuHeight) / 2;
-
-            for (int y = menuY - 1; y <= menuY + menuHeight; y++)
-            {
-                Console.SetCursorPosition(menuX - 1, y);
-                Console.Write("│");
-                Console.SetCursorPosition(menuX + menuWidth, y);
-                Console.Write("│");
-            }
-            Console.SetCursorPosition(menuX - 1, menuY - 1);
-            Console.Write("┌");
-            Console.SetCursorPosition(menuX + menuWidth, menuY - 1);
-            Console.Write("┐");
-            Console.SetCursorPosition(menuX - 1, menuY + menuHeight);
-            Console.Write("└");
-            Console.SetCursorPosition(menuX + menuWidth, menuY + menuHeight);
-            Console.Write("┘");
-
-            for (int i = 0; i < drawingFiles.Length; i++)
-            {
-                Console.SetCursorPosition(menuX, menuY + i + 1);
-                Console.WriteLine(selectedOption == i ? $"> {i + 1}. {Path.GetFileNameWithoutExtension(drawingFiles[i])}" : $"  {i + 1}. {Path.GetFileNameWithoutExtension(drawingFiles[i])}");
-            }
-
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-            ConsoleKey key = keyInfo.Key;
-
-            switch (key)
-            {
-                case ConsoleKey.UpArrow:
-                    if (selectedOption > 0)
-                    {
-                        selectedOption--;
-                    }
-                    break;
-                case ConsoleKey.DownArrow:
-                    if (selectedOption < drawingFiles.Length - 1)
-                    {
-                        selectedOption++;
-                    }
-                    break;
-                case ConsoleKey.Enter:
-                    optionSelected = true;
-                    break;
-                case ConsoleKey.Escape:
-                    exitMenu = true;
-                    optionSelected = true;
-                    break;
-            }
-        } while (!optionSelected && !exitMenu);
-
-        if (exitMenu)
-        {
-            return;
-        }
-
-        string selectedDrawingFile = drawingFiles[selectedOption];
-
-        Console.WriteLine("Biztosan törölni szeretné a fájlt? (I/N)");
-        ConsoleKeyInfo confirmKeyInfo = Console.ReadKey(true);
-        ConsoleKey confirmKey = confirmKeyInfo.Key;
-
-        if (confirmKey == ConsoleKey.I)
-        {
-            File.Delete(selectedDrawingFile);
-            Console.WriteLine($"A fájl sikeresen törölve: {selectedDrawingFile}");
-        }
-        else
-        {
-            Console.WriteLine("A fájl törlése sikertelen.");
-        }
-
-        Console.WriteLine("Nyomja meg az ESC gombot a menübe lépéshez");
-        Console.ReadKey(true);
-    }
-
-    static void LoadExistingDrawing()
-    {
-        string[] drawingFiles = Directory.GetFiles(".", "*.txt");
-
-        if (drawingFiles.Length == 0)
-        {
-            Console.WriteLine("Nem található ilyen.");
-            return;
-        }
-
-        int selectedOption = 0;
-        bool optionSelected = false;
-        bool exitMenu = false;
-
-        Console.Clear();
-        do
-        {
-            Console.SetCursorPosition(10, 10);
-            Console.WriteLine("                                          Válassz egy fájlt    ");
-            int menuWidth = 30;
-            int menuHeight = drawingFiles.Length + 2;
-            int menuX = (Console.WindowWidth - menuWidth) / 2;
-            int menuY = (Console.WindowHeight - menuHeight) / 2;
-
-            for (int y = menuY - 1; y <= menuY + menuHeight; y++)
-            {
-                Console.SetCursorPosition(menuX - 1, y);
-                Console.Write("│");
-                Console.SetCursorPosition(menuX + menuWidth, y);
-                Console.Write("│");
-            }
-            Console.SetCursorPosition(menuX - 1, menuY - 1);
-            Console.Write("┌");
-            Console.SetCursorPosition(menuX + menuWidth, menuY - 1);
-            Console.Write("┐");
-            Console.SetCursorPosition(menuX - 1, menuY + menuHeight);
-            Console.Write("└");
-            Console.SetCursorPosition(menuX + menuWidth, menuY + menuHeight);
-            Console.Write("┘");
-
-            for (int i = 0; i < drawingFiles.Length; i++)
-            {
-                Console.SetCursorPosition(menuX, menuY + i + 1);
-                Console.WriteLine(selectedOption == i ? $"> {i + 1}. {Path.GetFileNameWithoutExtension(drawingFiles[i])}" : $"  {i + 1}. {Path.GetFileNameWithoutExtension(drawingFiles[i])}");
-            }
-
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-            ConsoleKey key = keyInfo.Key;
-
-            switch (key)
-            {
-                case ConsoleKey.UpArrow:
-                    if (selectedOption > 0)
-                    {
-                        selectedOption--;
-                    }
-                    break;
-                case ConsoleKey.DownArrow:
-                    if (selectedOption < drawingFiles.Length - 1)
-                    {
-                        selectedOption++;
-                    }
-                    break;
-                case ConsoleKey.Enter:
-                    optionSelected = true;
-                    break;
-                case ConsoleKey.Escape:
-                    exitMenu = true;
-                    optionSelected = true;
-                    break;
-            }
-        } while (!optionSelected && !exitMenu);
-
-        if (exitMenu)
-        {
-            return;
-        }
-
-        string selectedDrawingFile = drawingFiles[selectedOption];
-        string[] lines = File.ReadAllLines(selectedDrawingFile);
-
-        InitScreen();
-
-        for (int y = 0; y < Math.Min(lines.Length, 25); y++)
-        {
-            for (int x = 0; x < Math.Min(lines[y].Length, 80); x++)
-            {
-                screen[y, x] = lines[y][x];
-                screenColors[y, x] = ConsoleColor.White;
-            }
-        }
-
-        Console.SetCursorPosition(10, 10);
-        Console.CursorVisible = false;
-        Console.Clear();
-        DrawScreen();
-        EditDrawing();
-    }
-
-    static void CreateNewDrawing()
-    {
-        InitScreen();
-        DrawScreen();
-        EditDrawing();
-    }
-
-
-
-    static void EditDrawing()
-    {
-        while (true)
-        {
-            DrawScreen();
-            DisplaySettings();
-
-            ConsoleKeyInfo originalKeyInfo = Console.ReadKey(true);
-            ConsoleKey originalKey = originalKeyInfo.Key;
-
-            switch (originalKey)
-            {
-                case ConsoleKey.Backspace:
-                    Backspace();
-                    break;
-                case ConsoleKey.UpArrow:
-                    MoveCursor(0, -1);
-                    break;
-                case ConsoleKey.DownArrow:
-                    MoveCursor(0, 1);
-                    break;
-                case ConsoleKey.LeftArrow:
-                    MoveCursor(-1, 0);
-                    break;
-                case ConsoleKey.RightArrow:
-                    MoveCursor(1, 0);
-                    break;
-                case ConsoleKey.Spacebar:
-                    DrawChar(currentChar, currentColor);
-                    break;
-                case ConsoleKey.D0:
-                    break;
-                case ConsoleKey.Escape:
-                    Console.WriteLine("Add meg a menteni kívánt fájl nevét:");
-                    string fileName = Console.ReadLine();
-
-                    string[] lines = new string[25];
-                    for (int y = 0; y < 25; y++)
-                    {
-                        string line = "";
-                        for (int x = 0; x < 80; x++)
-                        {
-                            line += screen[y, x];
-                        }
-                        lines[y] = line;
-                    }
-
-                    string filePath = $"{fileName}.txt";
-                    File.WriteAllLines(filePath, lines);
-
-                    Console.WriteLine($"A rajz sikeresen mentve lett: {filePath}");
-                    return;
-            }
-        }
-    }
-
-    static void Main(string[] args)
-    {
-        while (true)
-        {
-            DisplayMenu();
-        }
-    }
     static void SaveDrawing()
     {
         Console.WriteLine("Add meg a menteni kívánt fájl nevét:");
         string fileName = Console.ReadLine();
-
         string[] lines = new string[25];
         for (int y = 0; y < 25; y++)
         {
@@ -458,10 +436,8 @@ class Program
             }
             lines[y] = line;
         }
-
         string filePath = $"{fileName}.txt";
         File.WriteAllLines(filePath, lines);
-
         Console.WriteLine($"A rajz sikeresen mentve lett: {filePath}");
     }
 }
