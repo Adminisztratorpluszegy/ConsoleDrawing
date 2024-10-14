@@ -22,7 +22,7 @@ class Program
         ConsoleKey key;
         int selectedOption = 1;
         bool optionSelected = false;
-        int menuWidth = 17;
+        int menuWidth = 20;
         int menuHeight = 4;
         int menuX = (Console.WindowWidth - menuWidth) / 2;
         int menuY = (Console.WindowHeight - menuHeight) / 2;
@@ -48,7 +48,7 @@ class Program
             Console.SetCursorPosition(menuX, menuY);
             Console.WriteLine(selectedOption == 1 ? "> Új rajz" : "  Új rajz");
             Console.SetCursorPosition(menuX, menuY + 1);
-            Console.WriteLine(selectedOption == 2 ? "> Rajz betöltése" : "  Rajz betöltése");
+            Console.WriteLine(selectedOption == 2 ? "> Rajz szerkesztése" : "  Rajz szerkesztése");
             Console.SetCursorPosition(menuX, menuY + 2);
             Console.WriteLine(selectedOption == 3 ? "> Fájl törlése" : "  Fájl törlése");
             Console.SetCursorPosition(menuX, menuY + 3);
@@ -116,7 +116,7 @@ class Program
         {
             Console.SetCursorPosition(10, 10);
             Console.WriteLine("Válassz egy fájlt: ");
-            int menuWidth = 17;
+            int menuWidth = 20;
             int menuHeight = drawingFiles.Length + 2;
             int menuX = (Console.WindowWidth - menuWidth) / 2;
             int menuY = (Console.WindowHeight - menuHeight) / 2;
@@ -204,7 +204,7 @@ class Program
         {
             Console.SetCursorPosition(10, 10);
             Console.WriteLine("Válassz egy fájlt: ");
-            int menuWidth = 17;
+            int menuWidth = 20;
             int menuHeight = drawingFiles.Length + 2;
             int menuX = (Console.WindowWidth - menuWidth) / 2;
             int menuY = (Console.WindowHeight - menuHeight) / 2;
