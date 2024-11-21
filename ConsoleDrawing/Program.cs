@@ -16,7 +16,7 @@ public class DrawingContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;AttachDbFilename=C:\Users\GergoPc\source\repos\ConsoleDrawing\DrawingDB.mdf;Database=DrawingDB;Trusted_Connection=True;");
+        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;AttachDbFilename=C:\Users\balo.gergely.tamas\source\repos\ConsoleDrawing\DrawingDB.mdf;Database=DrawingDB;Trusted_Connection=True;");
     }
 
 
@@ -153,6 +153,8 @@ class Program
     {
         using (var db = new DrawingContext())
         {
+            Console.Clear();
+
             var drawings = db.Drawings.ToList();
             if (drawings.Count == 0)
             {
@@ -246,6 +248,7 @@ class Program
 
     static void LoadDrawingContent(string content)
     {
+        Console.Clear();
         int index = 0;
         for (int y = 0; y < 25; y++)
         {
