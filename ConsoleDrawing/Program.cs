@@ -2,21 +2,17 @@ using Microsoft.EntityFrameworkCore;
 public class Drawing
 {
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Content { get; set; } = string.Empty;
+    public string Name { get; set; }
+    public string Content { get; set; }
 }
 
 public class DrawingContext : DbContext
 {
-    public DrawingContext()
-    {
-        Database.EnsureCreated();
-    }
-    public DbSet<Drawing> Drawings { get; set; } = null!;
+    public DbSet<Drawing> Drawings { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;AttachDbFilename=C:\Users\balo.gergely.tamas\source\repos\ConsoleDrawing\DrawingDB.mdf;Database=DrawingDB;Trusted_Connection=True;");
+        optionsBuilder.UseSqlServer(@"C:\Users\GergoPc\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\MSSQLLocalDB");
     }
 
 
