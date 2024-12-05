@@ -12,10 +12,12 @@ public class DrawingContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+<<<<<<< HEAD
+        optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Drawing;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+=======
         optionsBuilder.UseSqlServer(@"C:\Users\GergoPc\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\MSSQLLocalDB");
+>>>>>>> 7c5f9ab34204e015ce563b9d96df09ffe73440a6
     }
-
-
 }
 
 class Program
@@ -394,9 +396,6 @@ class Program
             ConsoleKey originalKey = originalKeyInfo.Key;
             switch (originalKey)
             {
-                case ConsoleKey.Backspace:
-                    Backspace();
-                    break;
                 case ConsoleKey.UpArrow:
                     MoveCursor(0, -1);
                     break;
@@ -466,16 +465,6 @@ class Program
         Console.WriteLine($"Cursor: {cursorX}, {cursorY}");
         Console.WriteLine($"Character: {currentChar}");
         Console.WriteLine($"Cursor Color: {cursorColor}");
-    }
-    static void Backspace()
-    {
-        if (cursorX > 0)
-        {
-            cursorX--;
-            screen[cursorY, cursorX] = ' ';
-            screenColors[cursorY, cursorX] = ConsoleColor.Black;
-            DrawScreen();
-        }
     }
     static void MoveCursor(int dx, int dy)
     {
