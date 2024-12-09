@@ -12,11 +12,8 @@ public class DrawingContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-<<<<<<< HEAD
         optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Drawing;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
-=======
         optionsBuilder.UseSqlServer(@"C:\Users\GergoPc\AppData\Local\Microsoft\Microsoft SQL Server Local DB\Instances\MSSQLLocalDB");
->>>>>>> 7c5f9ab34204e015ce563b9d96df09ffe73440a6
     }
 }
 
